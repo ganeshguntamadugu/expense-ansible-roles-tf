@@ -1,0 +1,33 @@
+#All MySQL Tasks
+- name: mysql-server installation
+  ansible.builtin.package:
+    name: mysql-server
+    state: present
+
+- name: mysql-server start and enable
+  ansible.builtin.service:
+    name: mysqld
+    state: started
+    enabled: true
+
+- name: Installing Python library PyMySQL
+  ansible.builtin.pip:
+    name:
+      - PyMySQL
+    executable: pip3.9
+
+- name: MySQL Connection Checking
+  community.mysql.mysql_info:
+    login_user: "{{mysql_user}}"
+    login_password: "{{mysql_password}}"
+    login_host: "{{mysql_host}}"
+  ignore_errors: true
+  register: mysql_details
+
+- name: Printing MySQL Details
+  ansible.builtin.debug:
+    msg: "{{mysql_details}}"
+    
+- name: Set the MySQL root password
+  ansible.builtin.command: mysql_secure_installation --set-root-pass {{mysql_password}}
+  when: mysql_details.failed is true

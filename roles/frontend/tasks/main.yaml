@@ -1,0 +1,32 @@
+#All Frontend Tasks
+- name: Installing Nginx
+  ansible.builtin.package:
+    name: nginx
+    state: present
+
+- name: Enabling and Starting Nginx services
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Import tasks from common role
+  tags:
+    - deployment
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: similar
+
+- name: Creating a reverse proxy config that forwards #Copy works only for files without variables
+ #ansible.builtin.copy:
+  ansible.builtin.template:
+    src: frontend-config.j2
+    dest: /etc/nginx/default.d/expense.conf
+  notify: 
+    - Restarting and Enabling Nginx services 
+
+# - name: Restarting and Enabling Nginx services
+#   ansible.builtin.service:
+#     name: nginx
+#     state: restarted
+#     enabled: yes

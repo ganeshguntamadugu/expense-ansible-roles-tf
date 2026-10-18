@@ -1,0 +1,66 @@
+#All Backend Tasks
+- name: Disabling NodeJS default version
+  ansible.builtin.command: dnf module disable nodejs -y
+
+- name: Enabling NodeJS version:20 
+  ansible.builtin.command: dnf module enable nodejs:20 -y
+
+- name: Installing NodeJS and MySQL
+  ansible.builtin.package:
+    name: "{{item}}"
+    state: present
+  loop:
+    - nodejs
+    - mysql
+
+- name: Creating Application User "Expense"
+  ansible.builtin.user:
+    name: expense
+    state: present
+
+- name: Import tasks from common role
+  tags:
+    - deployment
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: similar
+
+- name: Installing Dependencies
+  tags: 
+    - deployment
+  ansible.builtin.npm:
+    path: /app
+
+- name: Configure SystemD Service #Copy works only for files without variables
+  #ansible.builtin.copy:
+  tags:
+    - deployment
+  ansible.builtin.template:
+    src: backend-config.j2
+    dest: /etc/systemd/system/backend.service
+  notify: 
+    - Daemon reload and Start the Service
+
+- name: Installing Python library PyMySQL
+  ansible.builtin.pip:
+    name:
+      - PyMySQL
+    executable: pip3.9 
+
+- name: Load Database Schema
+  community.mysql.mysql_db:
+    login_user: "{{mysql_user}}"
+    login_password: "{{mysql_password}}"
+    login_host: "{{mysql_host}}"
+    state: import
+    target: /app/schema/backend.sql
+    name: all
+  notify: 
+    - Daemon reload and Start the Service
+
+# - name: Daemon reload and Start the Service
+#   ansible.builtin.systemd_service:
+#     name: backend
+#     daemon_reload: true
+#     state: started
+#     enabled: true

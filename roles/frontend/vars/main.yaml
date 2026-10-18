@@ -1,0 +1,6 @@
+#All Frontend Variables
+application_url: https://raw.githubusercontent.com/daws-90s/expense-documentation/refs/heads/main/artifacts/expense-frontend-v3.tar.gz
+backend_host: backend.gangs.shop
+
+directory_name: html directory
+file_loaction: /usr/share/nginx/html/

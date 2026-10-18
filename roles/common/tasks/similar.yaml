@@ -1,0 +1,16 @@
+- name: Removing the "{{directory_name}}"
+  ansible.builtin.file:
+    path: "{{file_loaction}}"
+    state: absent
+  ignore_errors: true
+
+- name: Creating the "{{directory_name}}"
+  ansible.builtin.file:
+    path: "{{file_loaction}}"
+    state: directory
+
+- name: Downloading Application to "{{directory_name}}"
+  ansible.builtin.unarchive:
+    src: "{{application_url}}" #By default ansible thinks the files are in ansible server, so use remote_src: yes
+    dest: "{{file_loaction}}"
+    remote_src: yes
