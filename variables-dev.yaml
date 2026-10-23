@@ -1,2 +1,2 @@
 mysql_host: mysql-dev.gangs.shop
-# backend_host: backend.app-dev.gangs.shop
+backend_host: backend.app-dev.gangs.shop
